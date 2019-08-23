@@ -25,16 +25,34 @@ const getToken = async () => {
 export const getRegions = async () => {
   const accessToken = await getToken();
   const instance = createInstance(accessToken);
-  const data = await instance.get(`${apiBaseURL}/get/regions/json`);
-  return data;
+  const regions = await instance.get(`${apiBaseURL}/get/regions/json`);
+  return regions;
 };
 
-// const data = await instance.get(`${apiBaseURL}/get/cnaps/1/json`);
+export const getCnaps = async () => {
+  const accessToken = await getToken();
+  const instance = createInstance(accessToken);
+  const { data: regions } = await getRegions();
+  const regionsArray = Object.values(regions);
+  let cnaps = [];
+  for (const { id: regionId } of regionsArray) {
+    const { data } = await instance.get(
+      `${apiBaseURL}/get/cnaps/${regionId}/json`
+    );
+    if (Object.entries(data).length > 0) {
+      let regionObj = { regionId, data };
+      cnaps.push(regionObj);
+    }
+  }
+  return cnaps;
+};
+
 // const data = await instance.get(`${apiBaseURL}/get/cnap/detail/1/json`);
 
 export const getCadastralData = async () => {
   const accessToken = await getToken();
   const instance = createInstance(accessToken);
+  // mock params to test the api
   const params = {
     requestType: 12,
     transmit_as: 2,
@@ -57,6 +75,5 @@ export const getCadastralData = async () => {
     }
   };
   const data = await instance.post(`${apiBaseURL}/excerpt/json`, params);
-  console.log("API data", data);
   return data;
 };

@@ -21,7 +21,7 @@ const getToken = async () => {
   }
 };
 
-// Fetch regions using access_token
+// Fetch regions (области) using access_token
 export const getRegions = async () => {
   const accessToken = await getToken();
   const instance = createInstance(accessToken);
